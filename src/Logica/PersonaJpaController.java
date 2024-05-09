@@ -1,0 +1,240 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Logica;
+
+import java.io.Serializable;
+import javax.persistence.Query;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import Clases.Cliente;
+import java.util.ArrayList;
+import java.util.Collection;
+import Clases.Empleado;
+import Clases.Persona;
+import Logica.exceptions.NonexistentEntityException;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+/**
+ *
+ * @author DELL
+ */
+public class PersonaJpaController implements Serializable {
+
+    public PersonaJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+    private EntityManagerFactory emf = null;
+
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
+
+    public void create(Persona persona) {
+        if (persona.getClienteCollection() == null) {
+            persona.setClienteCollection(new ArrayList<Cliente>());
+        }
+        if (persona.getEmpleadoCollection() == null) {
+            persona.setEmpleadoCollection(new ArrayList<Empleado>());
+        }
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Collection<Cliente> attachedClienteCollection = new ArrayList<Cliente>();
+            for (Cliente clienteCollectionClienteToAttach : persona.getClienteCollection()) {
+                clienteCollectionClienteToAttach = em.getReference(clienteCollectionClienteToAttach.getClass(), clienteCollectionClienteToAttach.getIdcliente());
+                attachedClienteCollection.add(clienteCollectionClienteToAttach);
+            }
+            persona.setClienteCollection(attachedClienteCollection);
+            Collection<Empleado> attachedEmpleadoCollection = new ArrayList<Empleado>();
+            for (Empleado empleadoCollectionEmpleadoToAttach : persona.getEmpleadoCollection()) {
+                empleadoCollectionEmpleadoToAttach = em.getReference(empleadoCollectionEmpleadoToAttach.getClass(), empleadoCollectionEmpleadoToAttach.getIdempleado());
+                attachedEmpleadoCollection.add(empleadoCollectionEmpleadoToAttach);
+            }
+            persona.setEmpleadoCollection(attachedEmpleadoCollection);
+            em.persist(persona);
+            for (Cliente clienteCollectionCliente : persona.getClienteCollection()) {
+                Persona oldCliePersonaOfClienteCollectionCliente = clienteCollectionCliente.getCliePersona();
+                clienteCollectionCliente.setCliePersona(persona);
+                clienteCollectionCliente = em.merge(clienteCollectionCliente);
+                if (oldCliePersonaOfClienteCollectionCliente != null) {
+                    oldCliePersonaOfClienteCollectionCliente.getClienteCollection().remove(clienteCollectionCliente);
+                    oldCliePersonaOfClienteCollectionCliente = em.merge(oldCliePersonaOfClienteCollectionCliente);
+                }
+            }
+            for (Empleado empleadoCollectionEmpleado : persona.getEmpleadoCollection()) {
+                Persona oldEmplePersonaOfEmpleadoCollectionEmpleado = empleadoCollectionEmpleado.getEmplePersona();
+                empleadoCollectionEmpleado.setEmplePersona(persona);
+                empleadoCollectionEmpleado = em.merge(empleadoCollectionEmpleado);
+                if (oldEmplePersonaOfEmpleadoCollectionEmpleado != null) {
+                    oldEmplePersonaOfEmpleadoCollectionEmpleado.getEmpleadoCollection().remove(empleadoCollectionEmpleado);
+                    oldEmplePersonaOfEmpleadoCollectionEmpleado = em.merge(oldEmplePersonaOfEmpleadoCollectionEmpleado);
+                }
+            }
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    public void edit(Persona persona) throws NonexistentEntityException, Exception {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Persona persistentPersona = em.find(Persona.class, persona.getIdpersona());
+            Collection<Cliente> clienteCollectionOld = persistentPersona.getClienteCollection();
+            Collection<Cliente> clienteCollectionNew = persona.getClienteCollection();
+            Collection<Empleado> empleadoCollectionOld = persistentPersona.getEmpleadoCollection();
+            Collection<Empleado> empleadoCollectionNew = persona.getEmpleadoCollection();
+            Collection<Cliente> attachedClienteCollectionNew = new ArrayList<Cliente>();
+            for (Cliente clienteCollectionNewClienteToAttach : clienteCollectionNew) {
+                clienteCollectionNewClienteToAttach = em.getReference(clienteCollectionNewClienteToAttach.getClass(), clienteCollectionNewClienteToAttach.getIdcliente());
+                attachedClienteCollectionNew.add(clienteCollectionNewClienteToAttach);
+            }
+            clienteCollectionNew = attachedClienteCollectionNew;
+            persona.setClienteCollection(clienteCollectionNew);
+            Collection<Empleado> attachedEmpleadoCollectionNew = new ArrayList<Empleado>();
+            for (Empleado empleadoCollectionNewEmpleadoToAttach : empleadoCollectionNew) {
+                empleadoCollectionNewEmpleadoToAttach = em.getReference(empleadoCollectionNewEmpleadoToAttach.getClass(), empleadoCollectionNewEmpleadoToAttach.getIdempleado());
+                attachedEmpleadoCollectionNew.add(empleadoCollectionNewEmpleadoToAttach);
+            }
+            empleadoCollectionNew = attachedEmpleadoCollectionNew;
+            persona.setEmpleadoCollection(empleadoCollectionNew);
+            persona = em.merge(persona);
+            for (Cliente clienteCollectionOldCliente : clienteCollectionOld) {
+                if (!clienteCollectionNew.contains(clienteCollectionOldCliente)) {
+                    clienteCollectionOldCliente.setCliePersona(null);
+                    clienteCollectionOldCliente = em.merge(clienteCollectionOldCliente);
+                }
+            }
+            for (Cliente clienteCollectionNewCliente : clienteCollectionNew) {
+                if (!clienteCollectionOld.contains(clienteCollectionNewCliente)) {
+                    Persona oldCliePersonaOfClienteCollectionNewCliente = clienteCollectionNewCliente.getCliePersona();
+                    clienteCollectionNewCliente.setCliePersona(persona);
+                    clienteCollectionNewCliente = em.merge(clienteCollectionNewCliente);
+                    if (oldCliePersonaOfClienteCollectionNewCliente != null && !oldCliePersonaOfClienteCollectionNewCliente.equals(persona)) {
+                        oldCliePersonaOfClienteCollectionNewCliente.getClienteCollection().remove(clienteCollectionNewCliente);
+                        oldCliePersonaOfClienteCollectionNewCliente = em.merge(oldCliePersonaOfClienteCollectionNewCliente);
+                    }
+                }
+            }
+            for (Empleado empleadoCollectionOldEmpleado : empleadoCollectionOld) {
+                if (!empleadoCollectionNew.contains(empleadoCollectionOldEmpleado)) {
+                    empleadoCollectionOldEmpleado.setEmplePersona(null);
+                    empleadoCollectionOldEmpleado = em.merge(empleadoCollectionOldEmpleado);
+                }
+            }
+            for (Empleado empleadoCollectionNewEmpleado : empleadoCollectionNew) {
+                if (!empleadoCollectionOld.contains(empleadoCollectionNewEmpleado)) {
+                    Persona oldEmplePersonaOfEmpleadoCollectionNewEmpleado = empleadoCollectionNewEmpleado.getEmplePersona();
+                    empleadoCollectionNewEmpleado.setEmplePersona(persona);
+                    empleadoCollectionNewEmpleado = em.merge(empleadoCollectionNewEmpleado);
+                    if (oldEmplePersonaOfEmpleadoCollectionNewEmpleado != null && !oldEmplePersonaOfEmpleadoCollectionNewEmpleado.equals(persona)) {
+                        oldEmplePersonaOfEmpleadoCollectionNewEmpleado.getEmpleadoCollection().remove(empleadoCollectionNewEmpleado);
+                        oldEmplePersonaOfEmpleadoCollectionNewEmpleado = em.merge(oldEmplePersonaOfEmpleadoCollectionNewEmpleado);
+                    }
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            String msg = ex.getLocalizedMessage();
+            if (msg == null || msg.length() == 0) {
+                Integer id = persona.getIdpersona();
+                if (findPersona(id) == null) {
+                    throw new NonexistentEntityException("The persona with id " + id + " no longer exists.");
+                }
+            }
+            throw ex;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    public void destroy(Integer id) throws NonexistentEntityException {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Persona persona;
+            try {
+                persona = em.getReference(Persona.class, id);
+                persona.getIdpersona();
+            } catch (EntityNotFoundException enfe) {
+                throw new NonexistentEntityException("The persona with id " + id + " no longer exists.", enfe);
+            }
+            Collection<Cliente> clienteCollection = persona.getClienteCollection();
+            for (Cliente clienteCollectionCliente : clienteCollection) {
+                clienteCollectionCliente.setCliePersona(null);
+                clienteCollectionCliente = em.merge(clienteCollectionCliente);
+            }
+            Collection<Empleado> empleadoCollection = persona.getEmpleadoCollection();
+            for (Empleado empleadoCollectionEmpleado : empleadoCollection) {
+                empleadoCollectionEmpleado.setEmplePersona(null);
+                empleadoCollectionEmpleado = em.merge(empleadoCollectionEmpleado);
+            }
+            em.remove(persona);
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    public List<Persona> findPersonaEntities() {
+        return findPersonaEntities(true, -1, -1);
+    }
+
+    public List<Persona> findPersonaEntities(int maxResults, int firstResult) {
+        return findPersonaEntities(false, maxResults, firstResult);
+    }
+
+    private List<Persona> findPersonaEntities(boolean all, int maxResults, int firstResult) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            cq.select(cq.from(Persona.class));
+            Query q = em.createQuery(cq);
+            if (!all) {
+                q.setMaxResults(maxResults);
+                q.setFirstResult(firstResult);
+            }
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Persona findPersona(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Persona.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    public int getPersonaCount() {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+            Root<Persona> rt = cq.from(Persona.class);
+            cq.select(em.getCriteriaBuilder().count(rt));
+            Query q = em.createQuery(cq);
+            return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            em.close();
+        }
+    }
+    
+}
