@@ -1,31 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Logica;
 
-import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import Clases.Cliente;
 import Clases.Direccion;
 import Logica.exceptions.NonexistentEntityException;
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
-/**
- *
- * @author DELL
- */
 public class DireccionJpaController implements Serializable {
+
+    private EntityManagerFactory emf = null;
 
     public DireccionJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -43,7 +36,7 @@ public class DireccionJpaController implements Serializable {
             }
             em.persist(direccion);
             if (direccCliente != null) {
-                direccCliente.getDireccionCollection().add(direccion);
+                direccCliente.getDireccionList().add(direccion); // Modificado aquí
                 direccCliente = em.merge(direccCliente);
             }
             em.getTransaction().commit();
@@ -68,11 +61,11 @@ public class DireccionJpaController implements Serializable {
             }
             direccion = em.merge(direccion);
             if (direccClienteOld != null && !direccClienteOld.equals(direccClienteNew)) {
-                direccClienteOld.getDireccionCollection().remove(direccion);
+                direccClienteOld.getDireccionList().remove(direccion); // Modificado aquí
                 direccClienteOld = em.merge(direccClienteOld);
             }
             if (direccClienteNew != null && !direccClienteNew.equals(direccClienteOld)) {
-                direccClienteNew.getDireccionCollection().add(direccion);
+                direccClienteNew.getDireccionList().add(direccion); // Modificado aquí
                 direccClienteNew = em.merge(direccClienteNew);
             }
             em.getTransaction().commit();
@@ -106,7 +99,7 @@ public class DireccionJpaController implements Serializable {
             }
             Cliente direccCliente = direccion.getDireccCliente();
             if (direccCliente != null) {
-                direccCliente.getDireccionCollection().remove(direccion);
+                direccCliente.getDireccionList().remove(direccion); // Modificado aquí
                 direccCliente = em.merge(direccCliente);
             }
             em.remove(direccion);
@@ -163,5 +156,4 @@ public class DireccionJpaController implements Serializable {
             em.close();
         }
     }
-    
 }

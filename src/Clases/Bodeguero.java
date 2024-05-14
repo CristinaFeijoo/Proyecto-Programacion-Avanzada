@@ -5,41 +5,30 @@
 package Clases;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "bodeguero")
 @NamedQueries({
     @NamedQuery(name = "Bodeguero.findAll", query = "SELECT b FROM Bodeguero b"),
     @NamedQuery(name = "Bodeguero.findByIdbodeguero", query = "SELECT b FROM Bodeguero b WHERE b.idbodeguero = :idbodeguero"),
     @NamedQuery(name = "Bodeguero.findByLocal", query = "SELECT b FROM Bodeguero b WHERE b.local = :local")})
-public class Bodeguero implements Serializable {
+public class Bodeguero extends Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
+    
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "idbodeguero")
     private Integer idbodeguero;
+    
     @Column(name = "local")
     private String local;
-    @JoinColumn(name = "bode_empleado", referencedColumnName = "idempleado")
-    @ManyToOne
-    private Empleado bodeEmpleado;
 
     public Bodeguero() {
     }
@@ -62,14 +51,6 @@ public class Bodeguero implements Serializable {
 
     public void setLocal(String local) {
         this.local = local;
-    }
-
-    public Empleado getBodeEmpleado() {
-        return bodeEmpleado;
-    }
-
-    public void setBodeEmpleado(Empleado bodeEmpleado) {
-        this.bodeEmpleado = bodeEmpleado;
     }
 
     @Override
@@ -98,3 +79,4 @@ public class Bodeguero implements Serializable {
     }
     
 }
+

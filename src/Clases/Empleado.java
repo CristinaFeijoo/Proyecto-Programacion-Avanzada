@@ -1,53 +1,47 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Clases;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "empleado")
 @NamedQueries({
     @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e"),
     @NamedQuery(name = "Empleado.findByIdempleado", query = "SELECT e FROM Empleado e WHERE e.idempleado = :idempleado"),
-    @NamedQuery(name = "Empleado.findByCiudad", query = "SELECT e FROM Empleado e WHERE e.ciudad = :ciudad")})
-public class Empleado implements Serializable {
+    @NamedQuery(name = "Empleado.findByNombre", query = "SELECT e FROM Empleado e WHERE e.nombre = :nombre"),
+    @NamedQuery(name = "Empleado.findByApellido", query = "SELECT e FROM Empleado e WHERE e.apellido = :apellido"),
+    @NamedQuery(name = "Empleado.findByEdad", query = "SELECT e FROM Empleado e WHERE e.edad = :edad"),
+    @NamedQuery(name = "Empleado.findByGenero", query = "SELECT e FROM Empleado e WHERE e.genero = :genero")})
+@PrimaryKeyJoinColumn(name = "idempleado", referencedColumnName = "idpersona") // Para indicar la relación de herencia con Persona
+public class Empleado extends Persona implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idempleado")
     private Integer idempleado;
-    @Column(name = "ciudad")
-    private String ciudad;
-    @OneToMany(mappedBy = "reparEmpleado")
-    private Collection<Repartidor> repartidorCollection;
-    @JoinColumn(name = "emple_persona", referencedColumnName = "idpersona")
+    @Column(name = "nombre")
+    private String nombre;
+    @Column(name = "apellido")
+    private String apellido;
+    @Column(name = "edad")
+    private Integer edad;
+    @Column(name = "genero")
+    private Character genero;
+    @JoinColumn(name = "emp_direccion", referencedColumnName = "iddireccion")
     @ManyToOne
-    private Persona emplePersona;
-    @OneToMany(mappedBy = "bodeEmpleado")
-    private Collection<Bodeguero> bodegueroCollection;
-    @OneToMany(mappedBy = "entreEmpleado")
-    private Collection<Entrega> entregaCollection;
+    private Direccion empDireccion;
 
     public Empleado() {
     }
@@ -64,44 +58,44 @@ public class Empleado implements Serializable {
         this.idempleado = idempleado;
     }
 
-    public String getCiudad() {
-        return ciudad;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setCiudad(String ciudad) {
-        this.ciudad = ciudad;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public Collection<Repartidor> getRepartidorCollection() {
-        return repartidorCollection;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setRepartidorCollection(Collection<Repartidor> repartidorCollection) {
-        this.repartidorCollection = repartidorCollection;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
-    public Persona getEmplePersona() {
-        return emplePersona;
+    public Integer getEdad() {
+        return edad;
     }
 
-    public void setEmplePersona(Persona emplePersona) {
-        this.emplePersona = emplePersona;
+    public void setEdad(Integer edad) {
+        this.edad = edad;
     }
 
-    public Collection<Bodeguero> getBodegueroCollection() {
-        return bodegueroCollection;
+    public Character getGenero() {
+        return genero;
     }
 
-    public void setBodegueroCollection(Collection<Bodeguero> bodegueroCollection) {
-        this.bodegueroCollection = bodegueroCollection;
+    public void setGenero(Character genero) {
+        this.genero = genero;
     }
 
-    public Collection<Entrega> getEntregaCollection() {
-        return entregaCollection;
+    public Direccion getEmpDireccion() {
+        return empDireccion;
     }
 
-    public void setEntregaCollection(Collection<Entrega> entregaCollection) {
-        this.entregaCollection = entregaCollection;
+    public void setEmpDireccion(Direccion empDireccion) {
+        this.empDireccion = empDireccion;
     }
 
     @Override
@@ -128,5 +122,5 @@ public class Empleado implements Serializable {
     public String toString() {
         return "Clases.Empleado[ idempleado=" + idempleado + " ]";
     }
-    
+
 }

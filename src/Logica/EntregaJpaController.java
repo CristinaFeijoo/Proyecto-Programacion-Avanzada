@@ -60,14 +60,6 @@ public class EntregaJpaController implements Serializable {
             }
             entrega.setPaqueteCollection(attachedPaqueteCollection);
             em.persist(entrega);
-            if (entreCliente != null) {
-                entreCliente.getEntregaCollection().add(entrega);
-                entreCliente = em.merge(entreCliente);
-            }
-            if (entreEmpleado != null) {
-                entreEmpleado.getEntregaCollection().add(entrega);
-                entreEmpleado = em.merge(entreEmpleado);
-            }
             for (Paquete paqueteCollectionPaquete : entrega.getPaqueteCollection()) {
                 Entrega oldPaqEntregaOfPaqueteCollectionPaquete = paqueteCollectionPaquete.getPaqEntrega();
                 paqueteCollectionPaquete.setPaqEntrega(entrega);
@@ -113,22 +105,6 @@ public class EntregaJpaController implements Serializable {
             paqueteCollectionNew = attachedPaqueteCollectionNew;
             entrega.setPaqueteCollection(paqueteCollectionNew);
             entrega = em.merge(entrega);
-            if (entreClienteOld != null && !entreClienteOld.equals(entreClienteNew)) {
-                entreClienteOld.getEntregaCollection().remove(entrega);
-                entreClienteOld = em.merge(entreClienteOld);
-            }
-            if (entreClienteNew != null && !entreClienteNew.equals(entreClienteOld)) {
-                entreClienteNew.getEntregaCollection().add(entrega);
-                entreClienteNew = em.merge(entreClienteNew);
-            }
-            if (entreEmpleadoOld != null && !entreEmpleadoOld.equals(entreEmpleadoNew)) {
-                entreEmpleadoOld.getEntregaCollection().remove(entrega);
-                entreEmpleadoOld = em.merge(entreEmpleadoOld);
-            }
-            if (entreEmpleadoNew != null && !entreEmpleadoNew.equals(entreEmpleadoOld)) {
-                entreEmpleadoNew.getEntregaCollection().add(entrega);
-                entreEmpleadoNew = em.merge(entreEmpleadoNew);
-            }
             for (Paquete paqueteCollectionOldPaquete : paqueteCollectionOld) {
                 if (!paqueteCollectionNew.contains(paqueteCollectionOldPaquete)) {
                     paqueteCollectionOldPaquete.setPaqEntrega(null);
@@ -176,15 +152,9 @@ public class EntregaJpaController implements Serializable {
                 throw new NonexistentEntityException("The entrega with id " + id + " no longer exists.", enfe);
             }
             Cliente entreCliente = entrega.getEntreCliente();
-            if (entreCliente != null) {
-                entreCliente.getEntregaCollection().remove(entrega);
-                entreCliente = em.merge(entreCliente);
-            }
+            
             Empleado entreEmpleado = entrega.getEntreEmpleado();
-            if (entreEmpleado != null) {
-                entreEmpleado.getEntregaCollection().remove(entrega);
-                entreEmpleado = em.merge(entreEmpleado);
-            }
+            
             Collection<Paquete> paqueteCollection = entrega.getPaqueteCollection();
             for (Paquete paqueteCollectionPaquete : paqueteCollection) {
                 paqueteCollectionPaquete.setPaqEntrega(null);

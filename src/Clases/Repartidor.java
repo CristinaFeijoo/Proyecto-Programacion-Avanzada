@@ -5,41 +5,31 @@
 package Clases;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "repartidor")
 @NamedQueries({
     @NamedQuery(name = "Repartidor.findAll", query = "SELECT r FROM Repartidor r"),
     @NamedQuery(name = "Repartidor.findByIdrepartidor", query = "SELECT r FROM Repartidor r WHERE r.idrepartidor = :idrepartidor"),
     @NamedQuery(name = "Repartidor.findByZona", query = "SELECT r FROM Repartidor r WHERE r.zona = :zona")})
-public class Repartidor implements Serializable {
+public class Repartidor extends Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
+    
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "idrepartidor")
     private Integer idrepartidor;
+    
     @Column(name = "zona")
     private Integer zona;
-    @JoinColumn(name = "repar_empleado", referencedColumnName = "idempleado")
-    @ManyToOne
-    private Empleado reparEmpleado;
 
     public Repartidor() {
     }
@@ -62,14 +52,6 @@ public class Repartidor implements Serializable {
 
     public void setZona(Integer zona) {
         this.zona = zona;
-    }
-
-    public Empleado getReparEmpleado() {
-        return reparEmpleado;
-    }
-
-    public void setReparEmpleado(Empleado reparEmpleado) {
-        this.reparEmpleado = reparEmpleado;
     }
 
     @Override
@@ -98,3 +80,5 @@ public class Repartidor implements Serializable {
     }
     
 }
+
+

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Clases;
 
 import java.io.Serializable;
@@ -20,10 +16,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "estado")
 @NamedQueries({
@@ -36,20 +28,26 @@ import javax.persistence.TemporalType;
 public class Estado implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idestado")
     private Integer idestado;
+    
     @Column(name = "tipo")
     private Integer tipo;
+    
     @Column(name = "estado")
     private String estado;
+    
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
+    
     @Column(name = "observacion")
     private String observacion;
+    
     @JoinColumn(name = "est_paquete", referencedColumnName = "idpaquete")
     @ManyToOne
     private Paquete estPaquete;

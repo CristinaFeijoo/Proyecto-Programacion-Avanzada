@@ -58,24 +58,8 @@ public class PersonaJpaController implements Serializable {
             }
             persona.setEmpleadoCollection(attachedEmpleadoCollection);
             em.persist(persona);
-            for (Cliente clienteCollectionCliente : persona.getClienteCollection()) {
-                Persona oldCliePersonaOfClienteCollectionCliente = clienteCollectionCliente.getCliePersona();
-                clienteCollectionCliente.setCliePersona(persona);
-                clienteCollectionCliente = em.merge(clienteCollectionCliente);
-                if (oldCliePersonaOfClienteCollectionCliente != null) {
-                    oldCliePersonaOfClienteCollectionCliente.getClienteCollection().remove(clienteCollectionCliente);
-                    oldCliePersonaOfClienteCollectionCliente = em.merge(oldCliePersonaOfClienteCollectionCliente);
-                }
-            }
-            for (Empleado empleadoCollectionEmpleado : persona.getEmpleadoCollection()) {
-                Persona oldEmplePersonaOfEmpleadoCollectionEmpleado = empleadoCollectionEmpleado.getEmplePersona();
-                empleadoCollectionEmpleado.setEmplePersona(persona);
-                empleadoCollectionEmpleado = em.merge(empleadoCollectionEmpleado);
-                if (oldEmplePersonaOfEmpleadoCollectionEmpleado != null) {
-                    oldEmplePersonaOfEmpleadoCollectionEmpleado.getEmpleadoCollection().remove(empleadoCollectionEmpleado);
-                    oldEmplePersonaOfEmpleadoCollectionEmpleado = em.merge(oldEmplePersonaOfEmpleadoCollectionEmpleado);
-                }
-            }
+            
+            
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -109,40 +93,6 @@ public class PersonaJpaController implements Serializable {
             empleadoCollectionNew = attachedEmpleadoCollectionNew;
             persona.setEmpleadoCollection(empleadoCollectionNew);
             persona = em.merge(persona);
-            for (Cliente clienteCollectionOldCliente : clienteCollectionOld) {
-                if (!clienteCollectionNew.contains(clienteCollectionOldCliente)) {
-                    clienteCollectionOldCliente.setCliePersona(null);
-                    clienteCollectionOldCliente = em.merge(clienteCollectionOldCliente);
-                }
-            }
-            for (Cliente clienteCollectionNewCliente : clienteCollectionNew) {
-                if (!clienteCollectionOld.contains(clienteCollectionNewCliente)) {
-                    Persona oldCliePersonaOfClienteCollectionNewCliente = clienteCollectionNewCliente.getCliePersona();
-                    clienteCollectionNewCliente.setCliePersona(persona);
-                    clienteCollectionNewCliente = em.merge(clienteCollectionNewCliente);
-                    if (oldCliePersonaOfClienteCollectionNewCliente != null && !oldCliePersonaOfClienteCollectionNewCliente.equals(persona)) {
-                        oldCliePersonaOfClienteCollectionNewCliente.getClienteCollection().remove(clienteCollectionNewCliente);
-                        oldCliePersonaOfClienteCollectionNewCliente = em.merge(oldCliePersonaOfClienteCollectionNewCliente);
-                    }
-                }
-            }
-            for (Empleado empleadoCollectionOldEmpleado : empleadoCollectionOld) {
-                if (!empleadoCollectionNew.contains(empleadoCollectionOldEmpleado)) {
-                    empleadoCollectionOldEmpleado.setEmplePersona(null);
-                    empleadoCollectionOldEmpleado = em.merge(empleadoCollectionOldEmpleado);
-                }
-            }
-            for (Empleado empleadoCollectionNewEmpleado : empleadoCollectionNew) {
-                if (!empleadoCollectionOld.contains(empleadoCollectionNewEmpleado)) {
-                    Persona oldEmplePersonaOfEmpleadoCollectionNewEmpleado = empleadoCollectionNewEmpleado.getEmplePersona();
-                    empleadoCollectionNewEmpleado.setEmplePersona(persona);
-                    empleadoCollectionNewEmpleado = em.merge(empleadoCollectionNewEmpleado);
-                    if (oldEmplePersonaOfEmpleadoCollectionNewEmpleado != null && !oldEmplePersonaOfEmpleadoCollectionNewEmpleado.equals(persona)) {
-                        oldEmplePersonaOfEmpleadoCollectionNewEmpleado.getEmpleadoCollection().remove(empleadoCollectionNewEmpleado);
-                        oldEmplePersonaOfEmpleadoCollectionNewEmpleado = em.merge(oldEmplePersonaOfEmpleadoCollectionNewEmpleado);
-                    }
-                }
-            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -173,15 +123,7 @@ public class PersonaJpaController implements Serializable {
                 throw new NonexistentEntityException("The persona with id " + id + " no longer exists.", enfe);
             }
             Collection<Cliente> clienteCollection = persona.getClienteCollection();
-            for (Cliente clienteCollectionCliente : clienteCollection) {
-                clienteCollectionCliente.setCliePersona(null);
-                clienteCollectionCliente = em.merge(clienteCollectionCliente);
-            }
-            Collection<Empleado> empleadoCollection = persona.getEmpleadoCollection();
-            for (Empleado empleadoCollectionEmpleado : empleadoCollection) {
-                empleadoCollectionEmpleado.setEmplePersona(null);
-                empleadoCollectionEmpleado = em.merge(empleadoCollectionEmpleado);
-            }
+            
             em.remove(persona);
             em.getTransaction().commit();
         } finally {

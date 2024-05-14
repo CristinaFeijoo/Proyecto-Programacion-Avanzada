@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Clases;
 
 import java.io.Serializable;
@@ -17,10 +13,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "direccion")
 @NamedQueries({
@@ -34,21 +26,28 @@ import javax.persistence.Table;
 public class Direccion implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "iddireccion")
     private Integer iddireccion;
+    
     @Column(name = "codigo")
     private String codigo;
+    
     @Column(name = "calle1")
     private String calle1;
+    
     @Column(name = "calle2")
     private String calle2;
+    
     @Column(name = "referencia")
     private String referencia;
+    
     @Column(name = "actual")
     private Integer actual;
+    
     @JoinColumn(name = "direcc_cliente", referencedColumnName = "idcliente")
     @ManyToOne
     private Cliente direccCliente;

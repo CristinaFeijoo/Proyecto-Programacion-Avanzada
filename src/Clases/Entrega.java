@@ -22,10 +22,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "entrega")
 @NamedQueries({
@@ -42,19 +38,25 @@ public class Entrega implements Serializable {
     @Basic(optional = false)
     @Column(name = "identrega")
     private Integer identrega;
+    
     @Column(name = "codigo")
     private String codigo;
+    
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
+    
     @Column(name = "observacion")
     private String observacion;
+    
     @JoinColumn(name = "entre_cliente", referencedColumnName = "idcliente")
     @ManyToOne
     private Cliente entreCliente;
+    
     @JoinColumn(name = "entre_empleado", referencedColumnName = "idempleado")
     @ManyToOne
     private Empleado entreEmpleado;
+    
     @OneToMany(mappedBy = "paqEntrega")
     private Collection<Paquete> paqueteCollection;
 

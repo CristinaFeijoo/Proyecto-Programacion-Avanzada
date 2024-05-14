@@ -1,31 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Logica;
 
 import Clases.Bodeguero;
 import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import Clases.Empleado;
-import Logica.exceptions.NonexistentEntityException;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import Logica.exceptions.NonexistentEntityException;
+import java.util.List;
 
-/**
- *
- * @author DELL
- */
 public class BodegueroJpaController implements Serializable {
+
+    private EntityManagerFactory emf = null;
 
     public BodegueroJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -36,16 +28,7 @@ public class BodegueroJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Empleado bodeEmpleado = bodeguero.getBodeEmpleado();
-            if (bodeEmpleado != null) {
-                bodeEmpleado = em.getReference(bodeEmpleado.getClass(), bodeEmpleado.getIdempleado());
-                bodeguero.setBodeEmpleado(bodeEmpleado);
-            }
             em.persist(bodeguero);
-            if (bodeEmpleado != null) {
-                bodeEmpleado.getBodegueroCollection().add(bodeguero);
-                bodeEmpleado = em.merge(bodeEmpleado);
-            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -59,22 +42,7 @@ public class BodegueroJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Bodeguero persistentBodeguero = em.find(Bodeguero.class, bodeguero.getIdbodeguero());
-            Empleado bodeEmpleadoOld = persistentBodeguero.getBodeEmpleado();
-            Empleado bodeEmpleadoNew = bodeguero.getBodeEmpleado();
-            if (bodeEmpleadoNew != null) {
-                bodeEmpleadoNew = em.getReference(bodeEmpleadoNew.getClass(), bodeEmpleadoNew.getIdempleado());
-                bodeguero.setBodeEmpleado(bodeEmpleadoNew);
-            }
             bodeguero = em.merge(bodeguero);
-            if (bodeEmpleadoOld != null && !bodeEmpleadoOld.equals(bodeEmpleadoNew)) {
-                bodeEmpleadoOld.getBodegueroCollection().remove(bodeguero);
-                bodeEmpleadoOld = em.merge(bodeEmpleadoOld);
-            }
-            if (bodeEmpleadoNew != null && !bodeEmpleadoNew.equals(bodeEmpleadoOld)) {
-                bodeEmpleadoNew.getBodegueroCollection().add(bodeguero);
-                bodeEmpleadoNew = em.merge(bodeEmpleadoNew);
-            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -103,11 +71,6 @@ public class BodegueroJpaController implements Serializable {
                 bodeguero.getIdbodeguero();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The bodeguero with id " + id + " no longer exists.", enfe);
-            }
-            Empleado bodeEmpleado = bodeguero.getBodeEmpleado();
-            if (bodeEmpleado != null) {
-                bodeEmpleado.getBodegueroCollection().remove(bodeguero);
-                bodeEmpleado = em.merge(bodeEmpleado);
             }
             em.remove(bodeguero);
             em.getTransaction().commit();
@@ -163,5 +126,4 @@ public class BodegueroJpaController implements Serializable {
             em.close();
         }
     }
-    
 }

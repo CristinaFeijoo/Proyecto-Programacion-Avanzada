@@ -1,51 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Clases;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-/**
- *
- * @author DELL
- */
 @Entity
 @Table(name = "cliente")
-@NamedQueries({
-    @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c"),
-    @NamedQuery(name = "Cliente.findByIdcliente", query = "SELECT c FROM Cliente c WHERE c.idcliente = :idcliente"),
-    @NamedQuery(name = "Cliente.findByCelular", query = "SELECT c FROM Cliente c WHERE c.celular = :celular")})
 public class Cliente implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idcliente")
     private Integer idcliente;
-    @Column(name = "celular")
-    private String celular;
-    @JoinColumn(name = "clie_persona", referencedColumnName = "idpersona")
-    @ManyToOne
-    private Persona cliePersona;
-    @OneToMany(mappedBy = "direccCliente")
-    private Collection<Direccion> direccionCollection;
-    @OneToMany(mappedBy = "entreCliente")
-    private Collection<Entrega> entregaCollection;
+    @Column(name = "nombre")
+    private String nombre;
+    @Column(name = "apellido")
+    private String apellido;
+    
+    // Aquí se agrega la colección de direcciones
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "direccCliente")
+    private List<Direccion> direccionList;
 
     public Cliente() {
     }
@@ -62,36 +42,29 @@ public class Cliente implements Serializable {
         this.idcliente = idcliente;
     }
 
-    public String getCelular() {
-        return celular;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setCelular(String celular) {
-        this.celular = celular;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public Persona getCliePersona() {
-        return cliePersona;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setCliePersona(Persona cliePersona) {
-        this.cliePersona = cliePersona;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
-    public Collection<Direccion> getDireccionCollection() {
-        return direccionCollection;
+    // Métodos getter y setter para la colección de direcciones
+    public List<Direccion> getDireccionList() {
+        return direccionList;
     }
 
-    public void setDireccionCollection(Collection<Direccion> direccionCollection) {
-        this.direccionCollection = direccionCollection;
-    }
-
-    public Collection<Entrega> getEntregaCollection() {
-        return entregaCollection;
-    }
-
-    public void setEntregaCollection(Collection<Entrega> entregaCollection) {
-        this.entregaCollection = entregaCollection;
+    public void setDireccionList(List<Direccion> direccionList) {
+        this.direccionList = direccionList;
     }
 
     @Override
@@ -103,7 +76,6 @@ public class Cliente implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Cliente)) {
             return false;
         }
@@ -118,5 +90,4 @@ public class Cliente implements Serializable {
     public String toString() {
         return "Clases.Cliente[ idcliente=" + idcliente + " ]";
     }
-    
 }

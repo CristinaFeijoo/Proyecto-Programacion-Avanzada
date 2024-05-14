@@ -36,16 +36,9 @@ public class RepartidorJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Empleado reparEmpleado = repartidor.getReparEmpleado();
-            if (reparEmpleado != null) {
-                reparEmpleado = em.getReference(reparEmpleado.getClass(), reparEmpleado.getIdempleado());
-                repartidor.setReparEmpleado(reparEmpleado);
-            }
+            
             em.persist(repartidor);
-            if (reparEmpleado != null) {
-                reparEmpleado.getRepartidorCollection().add(repartidor);
-                reparEmpleado = em.merge(reparEmpleado);
-            }
+            
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -60,21 +53,9 @@ public class RepartidorJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Repartidor persistentRepartidor = em.find(Repartidor.class, repartidor.getIdrepartidor());
-            Empleado reparEmpleadoOld = persistentRepartidor.getReparEmpleado();
-            Empleado reparEmpleadoNew = repartidor.getReparEmpleado();
-            if (reparEmpleadoNew != null) {
-                reparEmpleadoNew = em.getReference(reparEmpleadoNew.getClass(), reparEmpleadoNew.getIdempleado());
-                repartidor.setReparEmpleado(reparEmpleadoNew);
-            }
+            
             repartidor = em.merge(repartidor);
-            if (reparEmpleadoOld != null && !reparEmpleadoOld.equals(reparEmpleadoNew)) {
-                reparEmpleadoOld.getRepartidorCollection().remove(repartidor);
-                reparEmpleadoOld = em.merge(reparEmpleadoOld);
-            }
-            if (reparEmpleadoNew != null && !reparEmpleadoNew.equals(reparEmpleadoOld)) {
-                reparEmpleadoNew.getRepartidorCollection().add(repartidor);
-                reparEmpleadoNew = em.merge(reparEmpleadoNew);
-            }
+            
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -103,11 +84,6 @@ public class RepartidorJpaController implements Serializable {
                 repartidor.getIdrepartidor();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The repartidor with id " + id + " no longer exists.", enfe);
-            }
-            Empleado reparEmpleado = repartidor.getReparEmpleado();
-            if (reparEmpleado != null) {
-                reparEmpleado.getRepartidorCollection().remove(repartidor);
-                reparEmpleado = em.merge(reparEmpleado);
             }
             em.remove(repartidor);
             em.getTransaction().commit();
